@@ -10,13 +10,8 @@ export function handleIndex(): Handler {
                     <h1>Hello Bun!</h1>
                 </header>
                 <main>
-                    <hello-world>
-                        <template shadowRootMode="open">
-                            <p>
-                                My name is <span data-target="hello-world.me"></span>!
-                            </p>
-                        </template>
-                    </hello-world>
+                    <HelloWorld userName="Rahim" />
+                    <HelloWorld />
                 </main>
             </Html>,
         );
@@ -50,6 +45,17 @@ export const Html = (
     ${children}
 </body>
 </html>`;
+
+export const HelloWorld = ({
+    userName = "Bun"
+}) => html`
+<hello-world user-name="${userName}">
+<template shadowRootMode="open">
+    <p>
+        My name is <span data-target="hello-world.me">${userName}</span>!
+    </p>
+</template>
+</hello-world>`
 
 /*
 c => c.html(`
