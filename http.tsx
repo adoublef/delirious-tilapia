@@ -21,7 +21,8 @@ export function handleIndex(): Handler {
                     <p>As an example try <code>{`${url}?q=VALUE`}</code></p>
                     <hr />
                     <p>We can load audio from the server</p>
-                    <AudioSample src-url="/samples/kick.wav" />
+                    <AudioMixer src-url="/samples/snare.wav" />
+                    <AudioMixer src-url="/samples/kick.wav" />
                 </main>
             </Html>,
         );
@@ -89,6 +90,19 @@ export const HelloWorld = ({
     </p>
 </template>
 </hello-world>`;
+
+export const AudioMixer = ({
+    children = undefined as (undefined | HtmlEscapedString | HtmlEscapedString[]),
+    ["src-url"]: srcUrl = ""
+}) => html`
+<audio-mixer>
+<template shadowRootMode="open">
+    <slot></slot>
+    ${AudioSample({ "src-url": srcUrl })}
+</template>
+    ${children}
+</audio-mixer>
+`;
 
 export const AudioSample = ({
     ["src-url"]: srcUrl = undefined as (string | undefined)
