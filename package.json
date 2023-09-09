@@ -1,15 +1,16 @@
 {
-  "name": "delirious-tilapia",
-  "module": "index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@flydotio/dockerfile": "latest",
-    "bun-types": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "hono": "^3.5.8"
-  }
+    "name": "delirious-tilapia",
+    "module": "index.ts",
+    "type": "module",
+    "devDependencies": {
+        "@flydotio/dockerfile": "latest",
+        "bun-types": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@github/catalyst": "adoublef/catalyst#v2",
+        "hono": "^3.5.8"
+    }
 }
