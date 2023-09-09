@@ -6,7 +6,7 @@ export function handleIndex(): Handler {
     return ({ html, req, ...c }) => {
         const { q } = req.query();
 
-        const url = new URL(req.url).origin
+        const url = new URL(req.url).origin;
 
         return html(
             <Html>
@@ -47,10 +47,23 @@ export const Html = (
     <title>${title}</title>
     <link rel="preload" crossOrigin href="/client.js" as="script" />
     <script src="/client.js" async type="module"></script>
+    
 </head>
 <body>
     ${children}
 </body>
+<script>
+    // https://developer.chrome.com/en/articles/declarative-shadow-dom/#polyfill
+    (function attachShadowRoots(root) {
+    root.querySelectorAll("template[shadowrootmode]").forEach(template => {
+        const mode = template.getAttribute("shadowrootmode");
+        const shadowRoot = template.parentNode.attachShadow({ mode });
+        shadowRoot.appendChild(template.content);
+        template.remove();
+        attachShadowRoots(shadowRoot);
+    });
+    })(document);
+</script>
 </html>`;
 
 export const HelloWorld = ({
