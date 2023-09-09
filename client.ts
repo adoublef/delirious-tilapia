@@ -5,42 +5,94 @@ import { attr, controller, target } from "@github/catalyst/src";
 import { consume, providable, provide } from "@github/catalyst/src/abilities";
 // import { slot, slottable } from "@github/catalyst/src/slottable";
 
+const { log } = console;
+
+// https://docs.midi-mixer.com/terminology
+
 @controller
-export class HelloWorldElement extends HTMLElement {
+@providable
+export class MidiMixerElement extends HTMLElement {
+    @provide
+    baseContext = new AudioContext({
+        latencyHint: "interactive",
+    });
+}
+
+@controller
+@providable
+export class MidiGroupElement extends HTMLElement {
     @attr
-    userName = "Bun";
+    midiChannel = 0;
+
+    handleEvent(evt: Event) {
+        log(evt);
+    }
+}
+
+@controller
+@providable
+export class VolumeControlElement extends HTMLElement {
+    @attr
+    minValue = 0;
+
+    @attr
+    maxValue = 100;
+
+    @attr
+    gainValue = 80;
 
     @target
-    declare me: HTMLSpanElement;
+    declare fader: HTMLInputElement;
+
+    @target
+    declare meter: HTMLOutputElement;
+
+    @attr
+    isMute = false;
+
+    @target
+    declare mute: HTMLInputElement;
 
     connectedCallback() {
-        this.me.textContent = this.userName;
+        this.isMute = this.mute.checked;
+    }
+
+    handleEvent(evt: Event) {
+        switch (evt.type) {
+            case "input":
+                this.#handleInput();
+                break;
+            case "change":
+                this.#handleCheck();
+                break;
+        }
+    }
+
+    #handleInput() {
+        this.meter.textContent =
+            (this.gainValue = this.fader.valueAsNumber)
+                .toString()
+                .padStart(3, "0");
+    }
+
+    #handleCheck() {
+        this.fader.disabled =
+            this.isMute = (this.mute.checked);
+    }
+
+    get valueWithPad() {
+        return (this.fader.valueAsNumber).toString().padStart(3, "0");
     }
 }
 
-
 @controller
-@providable
-export class AudioMixerElement extends HTMLElement {
-    @provide
-    baseContext = new AudioContext();
-
-    // @slot
-    // plugin: HTMLSlotElement;
-
-    connectedCallback() {
-        // console.log(this.plugin.assignedNodes());
-    }
-}
-
-@controller
-@providable
 export class AudioSampleElement extends HTMLElement {
     @attr
     srcUrl = "";
 
-    @consume
-    baseContext: AudioContext;
+    baseContext = new AudioContext({
+        latencyHint: "interactive",
+    });
 
     declare buffer: AudioBuffer | undefined;
 
@@ -51,10 +103,10 @@ export class AudioSampleElement extends HTMLElement {
     }
 
     async handleEvent() {
-        const { buffer } = this;
-        const sample = new AudioBufferSourceNode(this.baseContext, { buffer });
-        sample.connect(this.baseContext.destination);
-        sample.start(this.baseContext.currentTime);
+        const { buffer, baseContext } = this;
+        const sample = new AudioBufferSourceNode(baseContext, { buffer });
+        sample.connect(baseContext.destination);
+        sample.start(baseContext.currentTime);
     }
 }
 

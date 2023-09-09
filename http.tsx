@@ -3,26 +3,21 @@ import { html } from "hono/html";
 import { HtmlEscapedString } from "hono/utils/html";
 
 export function handleIndex(): Handler {
-    return ({ html, req, ...c }) => {
-        const { q } = req.query();
-
-        const url = new URL(req.url).origin;
-
+    return ({ html, req }) => {
         return html(
             <Html>
-                <header>
-                    <h1>Hello Bun!</h1>
-                </header>
                 <main>
-                    <HelloWorld user-name="Fly.io" />
-                    <HelloWorld user-name={q} />
+                    <MidiMixer>
+                        <MidiGroup midiChannel={0}>
+                            <VolumeControl></VolumeControl>
+                        </MidiGroup>
+                        <MidiGroup midiChannel={1}>
+                            <VolumeControl></VolumeControl>
+                        </MidiGroup>
+                    </MidiMixer>
                     <hr />
-                    <p>The above message can be updated by passing a value for <code>q</code> as a search parameter into the url</p>
-                    <p>As an example try <code>{`${url}?q=VALUE`}</code></p>
-                    <hr />
-                    <p>We can load audio from the server</p>
-                    <AudioMixer src-url="/samples/snare.wav" />
-                    <AudioMixer src-url="/samples/kick.wav" />
+                    <AudioSample midiFor={0} srcUrl="/samples/kick.wav" />
+                    <AudioSample midiFor={1} srcUrl="/samples/snare.wav" />
                 </main>
             </Html>,
         );
@@ -46,13 +41,95 @@ export function streamAudio(): Handler<any, "/samples/:filename"> {
     };
 }
 
+export const MidiMixer = ({
+    children = undefined as Children
+}) => html`
+<midi-mixer>
+<template shadowRootMode="open">
+    <style>
+        slot[name=group] {
+            display: flex;
+            flex-direction: column;
+            outline: 1px solid green;
+        }
+    </style>
+    <slot name="group"></slot>
+</template>
+    ${children}
+</midi-mixer>
+`;
+
+export const MidiGroup = ({
+    // TODO channel should be 0 to 15
+    children = undefined as Children,
+    midiChannel = undefined as (undefined | number),
+}) => html`
+<midi-group slot="group" midi-channel="${midiChannel}">
+<template shadowRootMode="open">
+    <input 
+        type="number"
+        min="${0}"
+        max="${15}"
+        value="${midiChannel}"
+        data-action="change:midi-group"
+    >
+    <slot name="volume"></slot>
+</template>
+    ${children}
+</midi-group>
+`;
+
+export const VolumeControl = ({
+    gainValue = 80
+}) => html`
+<volume-control
+    slot="volume"
+    gain-value="${gainValue}"
+>
+<template shadowRootMode="open">
+    <output
+        data-target="volume-control.meter"
+    >${gainValue.toString().padStart(3, "0")}</output>
+    <input
+        type="range"
+        min="${0}"
+        max="${127}"
+        step="${1}"
+        value="${gainValue}"
+        data-action="input:volume-control"
+        data-target="volume-control.fader"
+    >
+    <input 
+        type="checkbox"
+        data-action="change:volume-control"
+        data-target="volume-control.mute"
+    >
+</template>
+</volume-control>
+`;
+
+export const AudioSample = ({
+    srcUrl = undefined as (string | undefined),
+    midiFor = 0
+}) => html`
+<audio-sample src-url="${srcUrl}">
+<template shadowRootMode="open">
+    <button data-action="click:audio-sample">
+        click me
+    </button>
+</template>
+</audio-sample>`;
+
+type Children =
+    | undefined
+    | HtmlEscapedString
+    | HtmlEscapedString[];
+
 // <head> - https://htmlhead.dev/
-export const Html = (
-    { children, title }: {
-        children?: HtmlEscapedString | HtmlEscapedString[];
-        title?: string;
-    },
-) =>
+export const Html = ({
+    children = undefined as Children,
+    title = ""
+}) =>
     html`
 <html>
 <head>
@@ -79,38 +156,3 @@ export const Html = (
 })(document);
 </script>
 </html>`;
-
-export const HelloWorld = ({
-    ["user-name"]: userName = "Bun"
-}) => html`
-<hello-world user-name="${userName}">
-<template shadowRootMode="open">
-    <p>
-        My name is <span data-target="hello-world.me">${userName}</span>!
-    </p>
-</template>
-</hello-world>`;
-
-export const AudioMixer = ({
-    children = undefined as (undefined | HtmlEscapedString | HtmlEscapedString[]),
-    ["src-url"]: srcUrl = ""
-}) => html`
-<audio-mixer>
-<template shadowRootMode="open">
-    <slot></slot>
-    ${AudioSample({ "src-url": srcUrl })}
-</template>
-    ${children}
-</audio-mixer>
-`;
-
-export const AudioSample = ({
-    ["src-url"]: srcUrl = undefined as (string | undefined)
-}) => html`
-<audio-sample src-url="${srcUrl}">
-<template shadowRootMode="open">
-    <button data-action="click:audio-sample">
-        click me
-    </button>
-</template>
-</audio-sample>`;
