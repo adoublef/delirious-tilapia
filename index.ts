@@ -2,8 +2,17 @@ import { Hono } from "hono";
 
 const result = await Bun.build({
     entrypoints: ["./client.ts"],
+    target: "browser",
     // minify: true,
-    target: "browser"
+    format: "esm",
+    splitting: true,
+    sourcemap: "inline",
+    minify: {
+        whitespace: true,
+        syntax: true,
+        identifiers: false
+    },
+    root: import.meta.dir
 });
 
 const app = new Hono();
@@ -19,7 +28,7 @@ app.get("/", c => c.html(`
 `));
 
 app.get("/client.js", async c => {
-    c.header("content-type", "application/javascript")
+    c.header("content-type", "application/javascript");
     return c.newResponse(await (result.outputs[0]).arrayBuffer());
 });
 
