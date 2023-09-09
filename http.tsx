@@ -14,11 +14,14 @@ export function handleIndex(): Handler {
                     <h1>Hello Bun!</h1>
                 </header>
                 <main>
-                    <HelloWorld userName="Fly.io" />
-                    <HelloWorld userName={q} />
+                    <HelloWorld user-name="Fly.io" />
+                    <HelloWorld user-name={q} />
                     <hr />
                     <p>The above message can be updated by passing a value for <code>q</code> as a search parameter into the url</p>
                     <p>As an example try <code>{`${url}?q=VALUE`}</code></p>
+                    <hr />
+                    <p>We can load audio from the server</p>
+                    <AudioSample src-url="/samples/kick.wav" />
                 </main>
             </Html>,
         );
@@ -31,6 +34,16 @@ export function serveBundle(blob: Blob): Handler {
         return newResponse(await blob.arrayBuffer());
     };
 };
+
+export function streamAudio(): Handler<any, "/samples/:filename"> {
+    return async ({ ...c }) => {
+        const filename = c.req.param("filename");
+        const audio = Bun.file(`./samples/${filename}`);
+
+        const buffer = (await audio.arrayBuffer());
+        return c.newResponse(buffer);
+    };
+}
 
 // <head> - https://htmlhead.dev/
 export const Html = (
@@ -67,7 +80,7 @@ export const Html = (
 </html>`;
 
 export const HelloWorld = ({
-    userName = "Bun"
+    ["user-name"]: userName = "Bun"
 }) => html`
 <hello-world user-name="${userName}">
 <template shadowRootMode="open">
@@ -76,3 +89,14 @@ export const HelloWorld = ({
     </p>
 </template>
 </hello-world>`;
+
+export const AudioSample = ({
+    ["src-url"]: srcUrl = undefined as (string | undefined)
+}) => html`
+<audio-sample src-url="${srcUrl}">
+<template shadowRootMode="open">
+    <button data-action="click:audio-sample">
+        click me
+    </button>
+</template>
+</audio-sample>`;

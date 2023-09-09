@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { handle } from "hono/cloudflare-pages";
-import { handleIndex, serveBundle } from "./http";
+import { handleIndex, serveBundle, streamAudio } from "./http";
 
 const result = await Bun.build({
     entrypoints: ["./client.ts"],
@@ -21,6 +21,7 @@ const app = new Hono();
 
 app.get("/", handleIndex());
 app.get("/client.js", serveBundle(result.outputs[0]));
+app.get("/samples/:filename", streamAudio())
 
 const server = (Bun.serve({ fetch: app.fetch }));
 
