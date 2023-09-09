@@ -3,8 +3,10 @@ import { html } from "hono/html";
 import { HtmlEscapedString } from "hono/utils/html";
 
 export function handleIndex(): Handler {
-    return ({ html, ...c }) => {
-        const { q } = c.req.query();
+    return ({ html, req, ...c }) => {
+        const { q } = req.query();
+
+        const url = new URL(req.url).origin
 
         return html(
             <Html>
@@ -16,7 +18,7 @@ export function handleIndex(): Handler {
                     <HelloWorld userName={q} />
                     <hr />
                     <p>The above message can be updated by passing a value for <code>q</code> as a search parameter into the url</p>
-                    <p>As an example try <code>{"?q=VALUE"}</code></p>
+                    <p>As an example try <code>{`${url}?q=VALUE`}</code></p>
                 </main>
             </Html>,
         );
