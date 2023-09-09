@@ -1,4 +1,6 @@
 import { Hono } from "hono";
+import { handle } from "hono/cloudflare-pages";
+import { handleIndex, serveBundle } from "./http";
 
 const result = await Bun.build({
     entrypoints: ["./client.ts"],
@@ -17,20 +19,8 @@ const result = await Bun.build({
 
 const app = new Hono();
 
-app.get("/", c => c.html(`
-<h1>Hello, World!</h1>
-<hello-world>
-<template shadowRootMode="open">
-    <p>My name is <span data-target="hello-world.me"></span>!</p>
-</template>
-</hello-world>
-<script type="module" src="/client.js"></script>
-`));
-
-app.get("/client.js", async c => {
-    c.header("content-type", "application/javascript");
-    return c.newResponse(await (result.outputs[0]).arrayBuffer());
-});
+app.get("/", handleIndex());
+app.get("/client.js", serveBundle(result.outputs[0]));
 
 const server = (Bun.serve({ fetch: app.fetch }));
 
