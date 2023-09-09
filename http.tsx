@@ -12,7 +12,7 @@ export function handleIndex(): Handler {
                             <VolumeControl></VolumeControl>
                         </MidiGroup>
                         <MidiGroup midiChannel={1}>
-                            <VolumeControl></VolumeControl>
+                            <VolumeControl isMute={true}></VolumeControl>
                         </MidiGroup>
                     </MidiMixer>
                     <hr />
@@ -50,7 +50,6 @@ export const MidiMixer = ({
         slot[name=group] {
             display: flex;
             flex-direction: column;
-            outline: 1px solid green;
         }
     </style>
     <slot name="group"></slot>
@@ -80,10 +79,12 @@ export const MidiGroup = ({
 `;
 
 export const VolumeControl = ({
-    gainValue = 80
+    gainValue = 80,
+    isMute = false
 }) => html`
 <volume-control
     slot="volume"
+    is-mute="${isMute}"
     gain-value="${gainValue}"
 >
 <template shadowRootMode="open">
@@ -118,7 +119,8 @@ export const AudioSample = ({
         click me
     </button>
 </template>
-</audio-sample>`;
+</audio-sample>
+`;
 
 type Children =
     | undefined
@@ -155,4 +157,5 @@ export const Html = ({
     });
 })(document);
 </script>
-</html>`;
+</html>
+`;
