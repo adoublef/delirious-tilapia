@@ -5,7 +5,7 @@ import { HtmlEscapedString } from "hono/utils/html";
 export function handleIndex(): Handler {
     return ({ html, req }) => {
         return html(
-            <Html>
+            <Html title="Web Audio API">
                 <main>
                     <MidiMixer>
                         <MidiGroup midiChannel={0}>
@@ -133,7 +133,8 @@ export const Html = ({
     title = ""
 }) =>
     html`
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
