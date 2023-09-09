@@ -16,7 +16,7 @@ export function handleIndex(): Handler {
                     <HelloWorld userName={q} />
                     <hr />
                     <p>The above message can be updated by passing a value for <code>q</code> as a search parameter into the url</p>
-                    <p>As an example try <code>{"?q={YOUR_NAME}"}</code></p>
+                    <p>As an example try <code>{"?q=VALUE"}</code></p>
                 </main>
             </Html>,
         );
