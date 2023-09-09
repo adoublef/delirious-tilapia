@@ -4,14 +4,19 @@ import { HtmlEscapedString } from "hono/utils/html";
 
 export function handleIndex(): Handler {
     return ({ html, ...c }) => {
+        const { q } = c.req.query();
+
         return html(
             <Html>
                 <header>
                     <h1>Hello Bun!</h1>
                 </header>
                 <main>
-                    <HelloWorld userName="Rahim" />
-                    <HelloWorld />
+                    <HelloWorld userName="Fly.io" />
+                    <HelloWorld userName={q} />
+                    <hr />
+                    <p>The above message can be updated by passing a value for <code>q</code> as a search parameter into the url</p>
+                    <p>As an example try <code>{"?q={YOUR_NAME}"}</code></p>
                 </main>
             </Html>,
         );
@@ -55,16 +60,4 @@ export const HelloWorld = ({
         My name is <span data-target="hello-world.me">${userName}</span>!
     </p>
 </template>
-</hello-world>`
-
-/*
-c => c.html(`
-<h1>Hello, World!</h1>
-<hello-world>
-<template shadowRootMode="open">
-    <p>My name is <span data-target="hello-world.me"></span>!</p>
-</template>
-</hello-world>
-<script type="module" src="/client.js"></script>
-`)
-*/
+</hello-world>`;
