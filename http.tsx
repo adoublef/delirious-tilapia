@@ -53,8 +53,8 @@ export const Html = (
     ${children}
 </body>
 <script>
-    // https://developer.chrome.com/en/articles/declarative-shadow-dom/#polyfill
-    (function attachShadowRoots(root) {
+// https://developer.chrome.com/en/articles/declarative-shadow-dom/#polyfill
+(function attachShadowRoots(root) {
     root.querySelectorAll("template[shadowrootmode]").forEach(template => {
         const mode = template.getAttribute("shadowrootmode");
         const shadowRoot = template.parentNode.attachShadow({ mode });
@@ -62,7 +62,7 @@ export const Html = (
         template.remove();
         attachShadowRoots(shadowRoot);
     });
-    })(document);
+})(document);
 </script>
 </html>`;
 
