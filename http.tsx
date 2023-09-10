@@ -8,16 +8,18 @@ export function handleIndex(): Handler {
             <Html title="Web Audio API">
                 <main>
                     <MidiMixer>
+                        {/* master channel */}
                         <MidiGroup midiChannel={0}>
                             <VolumeControl></VolumeControl>
                         </MidiGroup>
+                        {/* non master channel */}
                         <MidiGroup midiChannel={1}>
                             <VolumeControl isMute={true}></VolumeControl>
                         </MidiGroup>
                     </MidiMixer>
                     <hr />
-                    <AudioSample midiFor={0} src="/samples/kick.wav" />
-                    <AudioSample midiFor={1} src="/samples/snare.wav" />
+                    <AudioSample htmlFor={0} src="/samples/kick.wav" />
+                    <AudioSample htmlFor={1} src="/samples/snare.wav" />
                     <hr />
                     <p>This should load as normal</p>
                     <audio src="/samples/kick.wav" controls />
@@ -79,7 +81,7 @@ export const MidiGroup = ({
     children = undefined as Children,
     midiChannel = undefined as (undefined | number),
 }) => html`
-<midi-group slot="group" midi-channel="${midiChannel}">
+<midi-group id="${midiChannel}" slot="group" midi-channel="${midiChannel}">
 <template shadowRootMode="open">
     <input 
         type="number"
@@ -127,10 +129,17 @@ export const VolumeControl = ({
 
 export const AudioSample = ({
     src = undefined as (string | undefined),
-    midiFor = 0
+    htmlFor = 0
 }) => html`
-<audio-sample src="${src}">
+<audio-sample src="${src}" for="${htmlFor}">
 <template shadowRootMode="open">
+    <input
+    type="number"
+    min="${0}"
+    max="${15}"
+    value="${htmlFor}"
+    data-action="change:midi-group"
+    >
     <button data-action="click:audio-sample">
         click me
     </button>

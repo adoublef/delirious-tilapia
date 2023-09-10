@@ -10,7 +10,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@github/catalyst": "adoublef/catalyst#362f6c5",
+    "@github/catalyst": "adoublef/catalyst#v2",
     "hono": "^3.5.8"
   }
 }
