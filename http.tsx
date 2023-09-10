@@ -19,7 +19,8 @@ export function handleIndex(): Handler {
                     <AudioSample midiFor={0} src="/samples/kick.wav" />
                     <AudioSample midiFor={1} src="/samples/snare.wav" />
                     <hr />
-                    <AudioPlayer src="/samples/snare.wav" />
+                    <p>This should load as normal</p>
+                    <audio src="/samples/kick.wav" controls />
                 </main>
             </Html>,
         );
@@ -156,7 +157,6 @@ export const Html = ({
     <title>${title}</title>
     <link rel="preload" crossOrigin href="/client.js" as="script" />
     <script src="/client.js" async type="module"></script>
-    
 </head>
 <body>
     ${children}
