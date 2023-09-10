@@ -16,8 +16,10 @@ export function handleIndex(): Handler {
                         </MidiGroup>
                     </MidiMixer>
                     <hr />
-                    <AudioSample midiFor={0} srcUrl="/samples/kick.wav" />
-                    <AudioSample midiFor={1} srcUrl="/samples/snare.wav" />
+                    <AudioSample midiFor={0} src="/samples/kick.wav" />
+                    <AudioSample midiFor={1} src="/samples/snare.wav" />
+                    <hr />
+                    <AudioPlayer src="/samples/snare.wav" />
                 </main>
             </Html>,
         );
@@ -40,6 +42,19 @@ export function streamAudio(): Handler<any, "/samples/:filename"> {
         return c.newResponse(buffer);
     };
 }
+
+/* AudioPlayer */
+export const AudioPlayer = ({
+    src = ""
+}) => html`
+<audio-player src="${src}">
+<template shadowRootMode="open">
+    <button data-action="click:audio-player">loadable</button>
+</template>
+</audio-player>
+`;
+
+/* AudioPlayer */
 
 export const MidiMixer = ({
     children = undefined as Children
@@ -110,10 +125,10 @@ export const VolumeControl = ({
 `;
 
 export const AudioSample = ({
-    srcUrl = undefined as (string | undefined),
+    src = undefined as (string | undefined),
     midiFor = 0
 }) => html`
-<audio-sample src-url="${srcUrl}">
+<audio-sample src="${src}">
 <template shadowRootMode="open">
     <button data-action="click:audio-sample">
         click me

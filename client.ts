@@ -1,13 +1,12 @@
 /// <reference lib="dom" />
 /// <reference lib="dom.iterable" />
 
+// https://docs.midi-mixer.com/terminology
 import { attr, controller, target } from "@github/catalyst/src";
-import { consume, providable, provide } from "@github/catalyst/src/abilities";
+import { consume, providable, provide, loadable } from "@github/catalyst/src/abilities";
 // import { slot, slottable } from "@github/catalyst/src/slottable";
 
 const { log } = console;
-
-// https://docs.midi-mixer.com/terminology
 
 @controller
 @providable
@@ -85,19 +84,15 @@ export class VolumeControlElement extends HTMLElement {
     }
 }
 
-@controller
+@controller @loadable
 export class AudioSampleElement extends HTMLElement {
-    @attr
-    srcUrl = "";
-
     baseContext = new AudioContext({
         latencyHint: "interactive",
     });
 
     declare buffer: AudioBuffer | undefined;
 
-    async connectedCallback() {
-        const res = await fetch(this.srcUrl);
+    async load(res: Response) {
         const arrayBuffer = await res.arrayBuffer();
         this.buffer = await this.baseContext.decodeAudioData(arrayBuffer);
     }
